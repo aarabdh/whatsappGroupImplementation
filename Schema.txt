@@ -1,0 +1,34 @@
+Using MySQL
+Database = Whatsapp_Group_Chat
+
+CREATE TABLE users (
+    phone_number INT NOT NULL PRIMARY KEY,
+    user_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE groups (
+    group_id INT AUTO_INCREMENT PRIMARY KEY,
+    group_name VARCHAR(255) NOT NULL,
+);
+
+CREATE TABLE access (
+    group_id INT NOT NULL,
+    phone_number INT NOT NULL,
+);
+
+CREATE TABLE messages (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    message_text VARCHAR(MAX) NOT NULL,
+    phone_number INT NOT NULL,
+    group_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE FUNCTION group_chat_view (@group_id INT)
+RETURNS TABLE
+AS
+RETURN
+    SELECT messages.phone_number, users.user_name, messages.message_text
+    FROM messages JOIN users ON messages.phone_number = users.phone_number
+    WHERE messages.group_id=@group_id
+    ORDER BY messages.created_at ASC;
